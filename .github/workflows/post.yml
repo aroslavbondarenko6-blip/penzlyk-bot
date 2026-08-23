@@ -1,0 +1,75 @@
+name: Публікація в Telegram
+
+on:
+  schedule:
+    # Раннер прокидається кожні 15 хвилин, а сам скрипт вирішує, чи настав
+    # слот за київським часом (10:00 / 15:00 / 20:00). Саме тому перехід на
+    # літній/зимовий час не зсуває розклад — трьох UTC-кронів тут свідомо немає.
+    - cron: "*/15 * * * *"
+  workflow_dispatch:
+    inputs:
+      slot:
+        description: "Запостити конкретний слот негайно (10, 15 або 20)"
+        required: false
+        default: ""
+      dry_run:
+        description: "Тільки показати пост, не надсилати"
+        type: boolean
+        default: false
+
+# Два запуски не мають постити одночасно.
+concurrency:
+  group: telegram-post
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  post:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Залежності
+        run: pip install -r requirements.txt
+
+      - name: Тести (фільтр, слоти, банк)
+        run: python -m unittest discover -s tests -t . -q
+
+      - name: Опублікувати
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          TELEGRAM_THREAD_ID: ${{ secrets.TELEGRAM_THREAD_ID }}
+          SLOT: ${{ inputs.slot }}
+          DRY_RUN: ${{ inputs.dry_run }}
+        run: |
+          set -e
+          ARGS=""
+          if [ -n "$SLOT" ]; then ARGS="$ARGS --force-slot $SLOT"; fi
+          if [ "$DRY_RUN" = "true" ]; then ARGS="$ARGS --dry-run"; fi
+          python -m bot.main $ARGS
+
+      - name: Зберегти стан
+        if: always()
+        run: |
+          git config user.name "art-bot"
+          git config user.email "art-bot@users.noreply.github.com"
+          if git diff --quiet -- state/state.json; then
+            echo "стан не змінився"
+            exit 0
+          fi
+          git add state/state.json
+          git commit -m "state: $(date -u '+%F %H:%M UTC')"
+          for i in 1 2 3; do
+            git pull --rebase --autostash origin "${GITHUB_REF_NAME}" && git push && exit 0
+            sleep 5
+          done
+          echo "не вдалося запушити стан — не критично"
