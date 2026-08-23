@@ -39,8 +39,17 @@ def _discover_feed(site: str) -> list[str]:
 
 
 def _clean(text: str) -> str:
+    """Зняти теги й HTML-сутності.
+
+    Частина фідів екранує сутності двічі («&amp;#x27;»), тому розекрановуємо,
+    доки текст змінюється — інакше в пості лишиться «прем&#x27;єра».
+    """
     text = re.sub(r"<[^>]+>", " ", text or "")
-    text = html.unescape(text)
+    for _ in range(3):
+        unescaped = html.unescape(text)
+        if unescaped == text:
+            break
+        text = unescaped
     return re.sub(r"\s+", " ", text).strip()
 
 

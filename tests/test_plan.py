@@ -77,3 +77,13 @@ class TestBuildPost(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TestNewsClean(unittest.TestCase):
+    """Фіди інколи екранують сутності двічі — у пості це не має світитися."""
+
+    def test_double_escaped_entities(self):
+        from bot.providers.news import _clean
+        self.assertEqual(_clean("прем&amp;#x27;єра"), "прем'єра")
+        self.assertEqual(_clean("<p>Виставка &laquo;Світло&raquo;</p>"), "Виставка «Світло»")
+        self.assertEqual(_clean("a &amp; b"), "a & b")
