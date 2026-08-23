@@ -1,7 +1,9 @@
 """Діагностика: які RSS-фіди, магазини та зображення реально працюють.
 
-Запуск:  python -m tools.check_sources          — усе
-         python -m tools.check_sources --fast   — без перевірки картинок
+Запуск:  python -m tools.check_sources               — фіди, магазини, вибірка картин
+         python -m tools.check_sources --fast        — без картинок узагалі
+         python -m tools.check_sources --all-images  — перевірити всі картини
+             (довго: Вікімедіа лімітує API, між запитами тримаємо паузу)
 """
 import json
 import sys
@@ -18,6 +20,9 @@ from bot.providers import artwork, deals, news               # noqa: E402
 
 HEADERS = news.HEADERS   # той самий UA, що й у бойовому провайдері
 FAST = "--fast" in sys.argv
+ALL_IMAGES = "--all-images" in sys.argv
+SAMPLE = 6
+PAUSE = 2.0
 problems: list[str] = []
 
 
@@ -77,14 +82,23 @@ if not FAST:
     print("\n=== Зображення до «картини дня» ===")
     bank = json.loads((Path(__file__).resolve().parent.parent / "content" / "evergreen.json")
                       .read_text(encoding="utf-8"))
-    for item in [i for i in bank if i["type"] == "artwork"]:
+    artworks = [i for i in bank if i["type"] == "artwork"]
+    if not ALL_IMAGES:
+        # рівномірна вибірка, щоб щотижнева діагностика не молотила API годину
+        step = max(1, len(artworks) // SAMPLE)
+        artworks = artworks[::step][:SAMPLE]
+        print(f"  (вибірка {len(artworks)} з {len([i for i in bank if i['type'] == 'artwork'])};"
+              f" усі — з ключем --all-images)")
+    for item in artworks:
         url = artwork.image_url(item["wiki"], item.get("lang", "en"))
         status = _head(url) if url else "стаття без вільного зображення"
-        good = bool(url) and status.startswith("2")
+        if status.startswith("429"):
+            status += " — файл знайдено, це ліміт діагностики"
+        good = bool(url) and (status.startswith("2") or status.startswith("429"))
         print(f"  {'OK  ' if good else 'FAIL'} {item['id']} {item['wiki']} -> {status}")
         if not good:
             problems.append(f"image:{item['id']}")
-        time.sleep(1.2)   # Вікімедіа лімітує API: без паузи прилітає 429
+        time.sleep(PAUSE)   # Вікімедіа лімітує API: без паузи прилітає 429
 
 print("\n=== Підсумок ===")
 if problems:
