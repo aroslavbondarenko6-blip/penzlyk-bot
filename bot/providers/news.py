@@ -9,7 +9,13 @@ import requests
 from ..config import ART_KEYWORDS, NEWS_SOURCES
 from ..filters import is_blocked
 
-HEADERS = {"User-Agent": "Mozilla/5.0 (compatible; art-tg-autopost/1.0)"}
+HEADERS = {
+    # Частина медіа відрізає «ботоподібні» UA — прикидаємось звичайним браузером.
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+                  "(KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",
+    "Accept": "application/rss+xml, application/atom+xml, application/xml;q=0.9, */*;q=0.8",
+    "Accept-Language": "uk-UA,uk;q=0.9,en;q=0.5",
+}
 MAX_AGE_DAYS = 5
 
 

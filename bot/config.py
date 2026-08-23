@@ -32,12 +32,17 @@ NEWS_SOURCES = [
      "feeds": ["https://artslooker.com/feed/"]},
     {"name": "Chytomo", "site": "https://chytomo.com/",
      "feeds": ["https://chytomo.com/feed/"]},
-    {"name": "The Village Україна", "site": "https://www.the-village.com.ua/",
-     "feeds": ["https://www.the-village.com.ua/rss"]},
-    {"name": "Korydor", "site": "https://www.korydor.in.ua/ua/",
-     "feeds": ["https://www.korydor.in.ua/ua/feed/"]},
+    {"name": "The Village Україна", "site": "https://www.village.com.ua/",
+     "feeds": ["https://www.village.com.ua/feeds.atom",
+               "https://www.the-village.com.ua/rss"]},
+    {"name": "Korydor", "site": "https://korydor.in.ua/ua/",
+     "feeds": ["https://korydor.in.ua/ua/feed", "https://www.korydor.in.ua/ua/feed/"]},
     {"name": "Localhistory", "site": "https://localhistory.org.ua/",
      "feeds": ["https://localhistory.org.ua/rss/"]},
+    {"name": "Bird in Flight", "site": "https://birdinflight.com/",
+     "feeds": ["https://birdinflight.com/feed"]},
+    {"name": "LB.ua Культура", "site": "https://lb.ua/culture",
+     "feeds": ["https://lb.ua/rss/ukr/culture.xml"]},
 ]
 
 # Ключові слова, за якими новина вважається «мистецькою».
@@ -50,11 +55,14 @@ ART_KEYWORDS = [
 
 # --- Джерела знижок на художні матеріали ---------------------------------
 DEALS_SOURCES = [
-    {"name": "ARTIZO", "url": "https://artizo.com.ua/ua/aktsii/", "home": "https://artizo.com.ua/"},
-    {"name": "Азур", "url": "https://azur.com.ua/ua/sale/", "home": "https://azur.com.ua/"},
-    {"name": "Майстерня (masterica)", "url": "https://masterica.com.ua/ua/sale/", "home": "https://masterica.com.ua/ua/"},
-    {"name": "Monet.ua", "url": "https://monet.ua/ua/aktsiyi/", "home": "https://monet.ua/"},
-    {"name": "ArtSklad", "url": "https://artsklad.ua/ua/sale/", "home": "https://artsklad.ua/"},
+    {"name": "ARTIZO", "url": "https://artizo.com.ua/spetsialni-propozytsii/rozprodazh/",
+     "home": "https://artizo.com.ua/"},
+    {"name": "Азур", "url": "https://azur.com.ua/", "home": "https://azur.com.ua/"},
+    {"name": "Майстерня (masterica)", "url": "https://masterica.com.ua/ua/aktsionnye-tovary/",
+     "home": "https://masterica.com.ua/ua/"},
+    {"name": "Monet.ua", "url": "https://monet.ua/discounted", "home": "https://monet.ua/"},
+    {"name": "ArtSklad", "url": "https://artsklad.ua/catalog/aktsijni-propozitsii",
+     "home": "https://artsklad.ua/"},
 ]
 
 TELEGRAM_API = "https://api.telegram.org"
