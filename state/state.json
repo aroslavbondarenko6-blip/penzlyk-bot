@@ -1,1 +1,12 @@
-{"done_slots": {}, "used_ids": {}, "seen_urls": {}, "last_error": null}
+{
+  "done_slots": {
+    "2026-08-23": [
+      15
+    ]
+  },
+  "used_ids": {
+    "art-009": "2026-08-23"
+  },
+  "seen_urls": {},
+  "last_error": null
+}
