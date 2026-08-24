@@ -9,7 +9,8 @@ import re
 import unittest
 from pathlib import Path
 
-from bot.config import SLOT_GRACE_MINUTES, SLOTS
+from bot.config import SLOTS
+from bot.main import slot_window
 
 WORKFLOW = Path(__file__).resolve().parent.parent / ".github" / "workflows" / "post.yml"
 KYIV_OFFSETS = (2, 3)          # UTC+2 узимку, UTC+3 улітку
@@ -58,8 +59,8 @@ class TestCronCoversSlots(unittest.TestCase):
         per_hour = _attempts_per_hour()
         for offset in KYIV_OFFSETS:
             for slot in SLOTS:
-                start = slot * 60 - offset * 60
-                end = start + SLOT_GRACE_MINUTES
+                open_at, close_at = slot_window(slot)
+                start, end = open_at - offset * 60, close_at - offset * 60
                 for minute in range(start, end + 1, 60):
                     hour = (minute // 60) % 24
                     with self.subTest(offset=offset, slot=slot, hour=hour):

@@ -3,8 +3,8 @@
 import unittest
 from datetime import datetime
 
-from bot.config import SLOT_GRACE_MINUTES, SLOTS, TZ
-from bot.main import due_slot
+from bot.config import SLOT_GAP_MINUTES, SLOT_GRACE_MINUTES, SLOTS, TZ
+from bot.main import due_slot, slot_window
 
 
 def at(hh: int, mm: int) -> datetime:
@@ -21,15 +21,33 @@ class TestDueSlot(unittest.TestCase):
     def test_exactly_at_slot(self):
         self.assertEqual(due_slot(at(10, 0), []), 10)
 
-    def test_inside_grace(self):
-        self.assertEqual(due_slot(at(12, 29), []), 10)
-        self.assertEqual(due_slot(at(12, 30), []), 10)
+    def test_inside_window(self):
+        for hh, mm in ((10, 30), (12, 29), (12, 31), (14, 0), (14, 30)):
+            with self.subTest(time=f"{hh}:{mm:02d}"):
+                self.assertEqual(due_slot(at(hh, mm), []), 10)
+
+    def test_windows(self):
+        """Слот живе до наступного (мінус буфер), останній — SLOT_GRACE_MINUTES."""
+        self.assertEqual(slot_window(10), (10 * 60, 15 * 60 - SLOT_GAP_MINUTES))   # 10:00-14:30
+        self.assertEqual(slot_window(15), (15 * 60, 20 * 60 - SLOT_GAP_MINUTES))   # 15:00-19:30
+        self.assertEqual(slot_window(20), (20 * 60, 20 * 60 + SLOT_GRACE_MINUTES))  # 20:00-22:30
 
     def test_expired_slot_closes_silently(self):
         done = []
-        self.assertIsNone(due_slot(at(12, 31), done),
+        self.assertIsNone(due_slot(at(14, 31), done),
                           "прострочений слот не має публікуватись")
         self.assertIn(10, done, "прострочений слот має бути закритий у стані")
+
+    def test_gap_between_slots_is_quiet(self):
+        """Між 14:31 і 15:00 не публікуємо нічого: щоб два пости не злиплися."""
+        self.assertIsNone(due_slot(at(14, 45), []))
+
+    def test_evening_slot_never_runs_late(self):
+        self.assertEqual(due_slot(at(22, 30), []), 20)
+        done = []
+        self.assertIsNone(due_slot(at(22, 31), done),
+                          "після 22:30 вечірній пост уже не виходить")
+        self.assertIn(20, done)
 
     def test_evening_slot(self):
         done = []

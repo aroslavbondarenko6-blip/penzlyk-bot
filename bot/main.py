@@ -6,9 +6,23 @@ from datetime import datetime
 
 from . import state as state_mod
 from . import telegram
-from .config import DEALS_WEEKDAYS, SLOTS, SLOT_GRACE_MINUTES, SLOT_PLAN, TZ
+from .config import (DEALS_WEEKDAYS, SLOTS, SLOT_GAP_MINUTES, SLOT_GRACE_MINUTES,
+                     SLOT_PLAN, TZ)
 from .filters import is_blocked, reason
 from .providers import artwork, deals, evergreen, news
+
+
+def slot_window(slot: int) -> tuple[int, int]:
+    """Межі слота у хвилинах від початку київської доби.
+
+    Слот живе до початку наступного (мінус буфер), а останній за добу —
+    рівно SLOT_GRACE_MINUTES. Крон GitHub ненадійний: між запусками буває
+    і три години, тому вузьке вікно означало б просто загублений пост.
+    """
+    start = slot * 60
+    later = [s for s in sorted(SLOTS) if s > slot]
+    end = later[0] * 60 - SLOT_GAP_MINUTES if later else start + SLOT_GRACE_MINUTES
+    return start, max(start, end)
 
 
 def due_slot(now: datetime, done_today: list[int]) -> int | None:
@@ -16,10 +30,10 @@ def due_slot(now: datetime, done_today: list[int]) -> int | None:
     for slot in sorted(SLOTS):
         if slot in done_today:
             continue
-        start = slot * 60
-        if start <= minutes <= start + SLOT_GRACE_MINUTES:
+        start, end = slot_window(slot)
+        if start <= minutes <= end:
             return slot
-        if minutes > start + SLOT_GRACE_MINUTES:
+        if minutes > end:
             done_today.append(slot)  # прострочено — тихо закриваємо слот
     return None
 
