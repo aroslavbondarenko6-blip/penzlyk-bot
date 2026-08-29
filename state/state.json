@@ -22,7 +22,9 @@
     "2026-08-28": [
       15
     ],
-    "2026-08-29": []
+    "2026-08-29": [
+      10
+    ]
   },
   "used_ids": {
     "art-009": "2026-08-23",
@@ -35,7 +37,8 @@
   "seen_urls": {
     "https://lb.ua/culture/2026/08/21/760470_vidrestavrovanu_krinitsyu.html": "2026-08-24",
     "https://lb.ua/culture/2026/08/25/760652_lishe_pro_posadu_scho_stoyit.html": "2026-08-25",
-    "https://suspilne.media/chernivtsi/1383492-skilki-zemelnih-dilanok-prodali-na-aukcionah-u-cernivcah-cogoric-ta-na-aki-sumi/": "2026-08-26"
+    "https://suspilne.media/chernivtsi/1383492-skilki-zemelnih-dilanok-prodali-na-aukcionah-u-cernivcah-cogoric-ta-na-aki-sumi/": "2026-08-26",
+    "https://lb.ua/culture/2026/08/28/762194_posol_italiyi_ukrayini_vruchiv.html": "2026-08-29"
   },
   "last_error": null
 }
