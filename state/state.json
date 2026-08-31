@@ -32,7 +32,9 @@
       15,
       20
     ],
-    "2026-08-31": []
+    "2026-08-31": [
+      10
+    ]
   },
   "used_ids": {
     "art-009": "2026-08-23",
@@ -51,7 +53,8 @@
     "https://lb.ua/culture/2026/08/25/760652_lishe_pro_posadu_scho_stoyit.html": "2026-08-25",
     "https://suspilne.media/chernivtsi/1383492-skilki-zemelnih-dilanok-prodali-na-aukcionah-u-cernivcah-cogoric-ta-na-aki-sumi/": "2026-08-26",
     "https://lb.ua/culture/2026/08/28/762194_posol_italiyi_ukrayini_vruchiv.html": "2026-08-29",
-    "https://lb.ua/culture/2026/08/29/762302_kiievi_organizuvali_vistavki.html": "2026-08-30"
+    "https://lb.ua/culture/2026/08/29/762302_kiievi_organizuvali_vistavki.html": "2026-08-30",
+    "https://chytomo.com/google-zapustyv-interaktyvnyj-shi-servis-dlia-chytannia-e-knyzhok-iakyj-skhvalyly-vydavtsi/": "2026-08-31"
   },
   "last_error": null
 }
