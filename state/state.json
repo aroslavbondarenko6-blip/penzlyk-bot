@@ -37,7 +37,9 @@
       15,
       20
     ],
-    "2026-09-01": []
+    "2026-09-01": [
+      10
+    ]
   },
   "used_ids": {
     "art-009": "2026-08-23",
@@ -59,7 +61,8 @@
     "https://suspilne.media/chernivtsi/1383492-skilki-zemelnih-dilanok-prodali-na-aukcionah-u-cernivcah-cogoric-ta-na-aki-sumi/": "2026-08-26",
     "https://lb.ua/culture/2026/08/28/762194_posol_italiyi_ukrayini_vruchiv.html": "2026-08-29",
     "https://lb.ua/culture/2026/08/29/762302_kiievi_organizuvali_vistavki.html": "2026-08-30",
-    "https://chytomo.com/google-zapustyv-interaktyvnyj-shi-servis-dlia-chytannia-e-knyzhok-iakyj-skhvalyly-vydavtsi/": "2026-08-31"
+    "https://chytomo.com/google-zapustyv-interaktyvnyj-shi-servis-dlia-chytannia-e-knyzhok-iakyj-skhvalyly-vydavtsi/": "2026-08-31",
+    "https://chytomo.com/iakymy-budut-8-tematychnykh-klasteriv-na-bookforum-2026/": "2026-09-01"
   },
   "last_error": null
 }
