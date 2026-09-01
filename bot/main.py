@@ -9,7 +9,7 @@ from . import telegram
 from .config import (DEALS_WEEKDAYS, SLOTS, SLOT_GAP_MINUTES, SLOT_GRACE_MINUTES,
                      SLOT_PLAN, TZ)
 from .filters import is_blocked, reason
-from .providers import artwork, deals, evergreen, news
+from .providers import artwork, deals, evergreen
 
 
 def slot_window(slot: int) -> tuple[int, int]:
@@ -45,9 +45,7 @@ def build_post(slot: int, now: datetime, st: dict) -> dict | None:
 
     for kind in plan:
         try:
-            if kind == "news":
-                item = news.fetch(st)
-            elif kind == "deals":
+            if kind == "deals":
                 item = deals.fetch(st)
             else:
                 item = evergreen.pick(kind, st)
@@ -127,9 +125,7 @@ def main() -> int:
     if not args.dry_run:
         st["done_slots"].setdefault(today, [])
         st["done_slots"][today] = sorted(set(st["done_slots"][today] + [slot]))
-        if item["id"].startswith("news:"):
-            st["seen_urls"][item["url"]] = today
-        elif not item["id"].startswith("deals:"):
+        if not item["id"].startswith("deals:"):
             st["used_ids"][item["id"]] = today
         st["last_error"] = None
         state_mod.save(st)

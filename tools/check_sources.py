@@ -1,6 +1,6 @@
-"""Діагностика: які RSS-фіди, магазини та зображення реально працюють.
+"""Діагностика: які магазини та зображення реально працюють.
 
-Запуск:  python -m tools.check_sources               — фіди, магазини, вибірка картин
+Запуск:  python -m tools.check_sources               — магазини, вибірка картин
          python -m tools.check_sources --fast        — без картинок узагалі
          python -m tools.check_sources --all-images  — перевірити всі картини
              (довго: Вікімедіа лімітує API, між запитами тримаємо паузу)
@@ -10,15 +10,19 @@ import sys
 import time
 from pathlib import Path
 
-import feedparser
 import requests
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from bot.config import DEALS_SOURCES, NEWS_SOURCES          # noqa: E402
-from bot.providers import artwork, deals, news               # noqa: E402
+from bot.config import DEALS_SOURCES                        # noqa: E402
+from bot.providers import artwork, deals                    # noqa: E402
 
-HEADERS = news.HEADERS   # той самий UA, що й у бойовому провайдері
+HEADERS = {
+    # Частина сайтів відрізає «ботоподібні» UA — прикидаємось браузером.
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+                  "(KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",
+    "Accept-Language": "uk-UA,uk;q=0.9,en;q=0.5",
+}
 FAST = "--fast" in sys.argv
 ALL_IMAGES = "--all-images" in sys.argv
 SAMPLE = 6
@@ -42,32 +46,7 @@ def _head(url: str, attempts: int = 3) -> str:
     return "429 (ліміт CDN, не проблема бота)"
 
 
-print("=== RSS-джерела новин ===")
-for src in NEWS_SOURCES:
-    ok = None
-    for url in src["feeds"]:
-        try:
-            d = feedparser.parse(url, request_headers=HEADERS)
-            if d.entries:
-                ok = f"{url} ({len(d.entries)} записів)"
-                break
-        except Exception:
-            pass
-    if not ok:
-        found = news._discover_feed(src["site"])
-        for url in found:
-            try:
-                d = feedparser.parse(url, request_headers=HEADERS)
-                if d.entries:
-                    ok = f"автопошук: {url} ({len(d.entries)} записів)"
-                    break
-            except Exception:
-                pass
-    print(f"  {'OK  ' if ok else 'FAIL'} {src['name']}: {ok or 'фід не відповідає'}")
-    if not ok:
-        problems.append(f"news:{src['name']}")
-
-print("\n=== Магазини (знижки) ===")
+print("=== Магазини (знижки) ===")
 for src in DEALS_SOURCES:
     try:
         items = deals._shop_items(src)
